@@ -1,0 +1,77 @@
+@font-face {
+  font-family: "SN";
+  src: url("fonts/SN_Pro/static/SNPro-ExtraBold.ttf") format("truetype");
+  font-weight: normal;
+} /* Font */
+
+#title{
+    /*Text style */
+    color: purple;
+    font-size: 75px;
+
+    /*positioning*/
+    margin: 0 auto;
+    width: 100%;
+    text-align: center;
+
+    font-family: "SN";
+} /*Title Text*/
+
+#titleCON {
+    width: fit-content;
+    padding: 20px;
+    margin: 0 auto;
+
+    border-radius: 30px;
+    background-color: rgb(245, 211, 255);
+} /*Title Container*/
+
+body {
+    background-color: rgb(255, 121, 190);
+} /*The page*/
+
+#playMenu {
+    background-color: rgb(245, 211, 255);
+    /* Size */
+    width: 80%;
+    height: 300px;
+    /* Pos */
+    margin: 20px auto;
+    padding: 20px;
+
+    border-radius: 15px;
+}
+
+/*Button*/
+#firstGame{
+    background-color: purple;
+    padding: 12px 24px; /*Size*/
+    border: none;
+    border-radius: 10px;
+    color: rgb(255, 255, 255);
+    display: block;
+    margin: 0 auto;
+}
+
+/*On Button Hover*/
+#firstGame:hover{
+    background-color: rgb(58, 0, 58);
+    transform: translateY(-2px); /*Slight Shift*/
+}
+
+#gameScreen {
+    background-color: aqua;
+    margin: 20px auto;
+    width: 400px;
+    height: 400px;
+
+    position: relative;
+
+    width: fit-content;
+}
+
+
+
+
+
+
