@@ -73,8 +73,8 @@ function startGame() {
                 {}
             ],
             goal: { x: 280, y: 240, width: 20, height: 20, color: true },
-            //playerStart: { x: 20, y: 20 },
-            playerStart: { x: 280, y: 240 }, 
+            playerStart: { x: 20, y: 20 },
+            //playerStart: { x: 280, y: 240 }, 
             gravity: { active: false, strength: 1}
         },
 
@@ -98,8 +98,8 @@ function startGame() {
                 {}
             ],
             goal: { x: 375, y: 200, width: 5, height: 80, color: false},
-            //playerStart: { x: 40, y: 260 },
-            playerStart: { x: 375, y: 200},
+            playerStart: { x: 40, y: 260 },
+            //playerStart: { x: 375, y: 200},
             gravity: { active: true, strength: 1}
         },
         {
@@ -125,8 +125,8 @@ function startGame() {
                 {}
             ],
             goal: { x: 375, y: 200, width: 5, height: 80, color: false},
-            //playerStart: { x: 40, y: 260 },
-            playerStart: {x: 375, y: 200},
+            playerStart: { x: 40, y: 260 },
+            //playerStart: {x: 375, y: 200},
             gravity: { active: true, strength: 1}
         },
         {
@@ -156,8 +156,8 @@ function startGame() {
                 {x: 20, y: 200, width: 20, height: 80, id: 3, color: false, active: false},
             ],
             goal: { x: 375, y: 200, width: 5, height: 80, color: false},
-            //playerStart: { x: 40, y: 260 },
-            playerStart: { x: 375, y: 200 },
+            playerStart: { x: 40, y: 260 },
+            //playerStart: { x: 375, y: 200 },
             gravity: { active: true, strength: 1}
         },
         {
