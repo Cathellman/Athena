@@ -5,6 +5,9 @@ function startGame() {
     const canvas = document.getElementById("mazeCanvas");
     const ctx = canvas.getContext("2d");
 
+
+    // ICON REMEBER
+    let iconChanged = false;
     // -------------------------
     // LEVEL DATA
     // -------------------------
@@ -21,6 +24,7 @@ function startGame() {
                 {x: 40, y: 40, width: 160, height: 20}, 
                 {x: 220, y: 40, width: 140, height: 20}, 
 
+                {x: 180, y: 20, width: 20, height: 20}, 
                 {x: 40, y: 60, width: 20, height: 60},
                 {x: 220, y: 60, width: 20, height: 40},
                 {x: 140, y: 80, width: 60, height: 20},
@@ -233,6 +237,14 @@ function startGame() {
         });
     }
 
+    function ChangeIcons() {
+        if (gravity.active && !iconChanged) {
+            document.querySelector("#Up img").src = "images/close_80dp_1F1F1F_FILL0_wght400_GRAD0_opsz48.png";
+            document.querySelector("#Down img").src = "images/cruelty_free_80dp_1F1F1F_FILL0_wght400_GRAD0_opsz48.png";
+            iconChanged = true;
+        }
+    }
+
 
     // -------------------------
     // MOVEMENT AND GRAVITY AND JUMPING
@@ -254,7 +266,9 @@ function startGame() {
         } 
         if (e.key === "ArrowLeft") player.dx = -player.speed;
         if (e.key === "ArrowRight") player.dx = player.speed;
+
     });
+    
 
     document.addEventListener("keyup", e => {
         if (["ArrowUp","ArrowDown"].includes(e.key)) player.dy = 0;
@@ -284,6 +298,58 @@ function startGame() {
     const trigerActions = {
         1: () => t1(),
     }
+
+    // -------------------------------------------------------------------------------
+    // ----------------------------- TOUCH -------------------------------------------
+    // -------------------------------------------------------------------------------
+    function bindButton(btnId, onPress, onRelease) {
+        const btn = document.getElementById(btnId);
+
+        // Mouse support
+        btn.addEventListener("mousedown", onPress);
+        btn.addEventListener("mouseup", onRelease);
+        btn.addEventListener("mouseleave", onRelease);
+
+        // Touch support (for phones)
+        btn.addEventListener("touchstart", e => {
+            e.preventDefault(); // prevents scrolling
+            onPress();
+        });
+
+        btn.addEventListener("touchend", e => {
+            e.preventDefault();
+            onRelease();
+        });
+    }
+    // TOUCH + MOUSE BUTTON BINDINGS
+    bindButton("left",
+        () => player.dx = -player.speed,
+        () => player.dx = 0
+    );
+
+    bindButton("Right",
+        () => player.dx = player.speed,
+        () => player.dx = 0
+    );
+
+    bindButton("Up",
+        () => {
+            if (!gravity.active) player.dy = -player.speed;
+        },
+        () => player.dy = 0
+    );
+
+    bindButton("Down",
+        () => {
+            if (gravity.active && player.grounded) player.dy = -7;
+            else player.dy = player.speed;
+        },
+        () => player.dy = 0
+    );
+
+
+
+
 
     // -------------------------
     // COLLISION
@@ -368,17 +434,16 @@ function startGame() {
         fall(); // Gravity
 
 
-        if (!checkCollision(nx, player.y)) player.x = nx; // Hor movement
+        if (!checkCollision(nx, player.y)) player.x = nx; // Hor Movement
 
 
-        if (!checkCollision(player.x, ny)) {
-            player.y = ny;
-        } 
+        if (!checkCollision(player.x, ny)) player.y = ny; // Vert Movement
 
 
 
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ChangeIcons(); // Changes the icon once gravity is enable 
         drawKill();
         drawWalls();
         drawPlayer();

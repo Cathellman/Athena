@@ -71,7 +71,27 @@ body {
 }
 
 
+/* Play button */
+#buttonContainer {
+    width: fit-content;
+    margin: 0 auto;
+    
+}
 
+.moveBtn {
+    border: none;
+    border-radius: 20px;
+    
+}
 
+.moveBtn:active {
+    background-color: rgb(73, 73, 73);
+}
+
+.btnIcon {
+    width: 80%;
+    height: 80%;
+    pointer-events: none;
+}
 
 
