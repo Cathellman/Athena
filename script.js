@@ -193,6 +193,7 @@ function startGame() {
     function backupLevel() {
         backUpLevel = JSON.parse(JSON.stringify(levels[currentLevel]));
     }
+    backupLevel();
 
 
     // -------------------------
