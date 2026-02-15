@@ -68,7 +68,7 @@ function startGame() {
             trigger: [
                 {}
             ],
-            goal: { x: 280, y: 240, width: 20, height: 20 },
+            goal: { x: 280, y: 240, width: 20, height: 20, color: true },
             //goal: { x: 20, y: 20, width: 20, height: 20 },
             playerStart: { x: 20, y: 20 },
             gravity: { active: false, strength: 1}
@@ -94,8 +94,8 @@ function startGame() {
                 {}
             ],
             goal: { x: 375, y: 200, width: 5, height: 80, color: false},
-            playerStart: { x: 40, y: 260 },
-            //playerStart: { x: 375, y: 200},
+            //playerStart: { x: 40, y: 260 },
+            playerStart: { x: 375, y: 200},
             gravity: { active: true, strength: 1}
         },
         {
@@ -134,18 +134,23 @@ function startGame() {
                 {x: 380, y: 0, width: 20, height: 400},
 
                 {x: 20, y: 280, width: 120, height: 100}, // Fist hill
-                {x: 140, y: 280, width: 80, height: 100}, // Second (Moving Hill)
+                {x: 140, y: 280, width: 80, height: 100, enable: true, id: 1}, // Second (Moving Hill)
+                {x: 220, y: 280, width: 160, height: 100,} // Second
 
             ],
-            kill: [],
-            trigger: [
-                {x: 200, y: 200, width: 20, height: 20, id: 1, color: true}
+            kill: [
+                {x: 140, y: 360, width: 80, height: 20},
             ],
-            goal: { x: 375, y: 200, width: 5, height: 80, color: true},
+            trigger: [
+                {x: 140, y: 200, width: 1, height: 80, id: 1, color: false}
+            ],
+            goal: { x: 375, y: 200, width: 5, height: 80, color: false},
             playerStart: { x: 40, y: 260 },
             gravity: { active: true, strength: 1}
         }
     ];
+
+    let backUpLevel = [];
 
     // -------------------------
     // LOAD LEVEL 
@@ -176,9 +181,13 @@ function startGame() {
         gravity = levels[currentLevel].gravity;
         trigger = levels[currentLevel].trigger;
 
-
         player.x = levels[currentLevel].playerStart.x;
         player.y = levels[currentLevel].playerStart.y;
+    }
+
+    // Call this ONLY ONCE per level
+    function backupLevel() {
+        backUpLevel = JSON.parse(JSON.stringify(levels[currentLevel]));
     }
 
 
@@ -187,8 +196,13 @@ function startGame() {
     // -------------------------
     function drawWalls() {
         ctx.fillStyle = "#444";
-        walls.forEach(w => ctx.fillRect(w.x, w.y, w.width, w.height));
+        walls.forEach(w => {
+            if (w.enable !== false) {   // draw only if enabled
+                ctx.fillRect(w.x, w.y, w.width, w.height);
+            }
+        });
     }
+
 
     function drawKill() {
         ctx.fillStyle = "red";
@@ -254,11 +268,29 @@ function startGame() {
         }
     }
 
+
+    // -------------------------
+    // TRIGER
+    // -------------------------
+
+    function t1() {
+        walls.forEach (w => {
+            if (w.id === 1){
+                w.enable = false;
+            } 
+        });
+    }
+
+    const trigerActions = {
+        1: () => t1(),
+    }
+
     // -------------------------
     // COLLISION
     // -------------------------
     function checkCollision(nx, ny) {
         return walls.some(w =>
+            w.enable !== false &&
             nx < w.x + w.width &&
             nx + player.size > w.x &&
             ny < w.y + w.height &&
@@ -279,7 +311,13 @@ function startGame() {
         ) {
             currentLevel ++;
             loadLevel();
+            backupLevel();
         };
+    }
+
+    // restart function, loading level
+    function restartLevel(){
+        levels[currentLevel] = JSON.parse(JSON.stringify(backUpLevel));
     }
 
     function checkKill() {
@@ -290,7 +328,8 @@ function startGame() {
                 player.y < k.y + k.height &&
                 player.y + player.size > k.y
             ) {
-                loadLevel(); // restart level
+                restartLevel(); // resets the data
+                loadLevel();
             }
         }
     }
@@ -301,11 +340,28 @@ function startGame() {
         player.grounded = checkCollision(player.x, ny);
     };
 
+    function checkTrigger() {
+        // Checks and dose trigger actions
+
+        trigger.forEach (t => {
+            if (
+                player.x < t.x + t.width &&
+                player.x + player.size > t.x &&
+                player.y < t.y + t.height &&
+                player.y + player.size > t.y
+            ) {
+                if (t.id && trigerActions[t.id]){
+                    trigerActions[t.id](); // Runs the certain triger its linked to 
+                }
+            }
+        })
+    }
 
     // -------------------------
     // GAME LOOP
     // -------------------------
     function update() {
+        //       Curent     Added 
         let nx = player.x + player.dx;
         let ny = player.y + player.dy;
 
@@ -323,14 +379,15 @@ function startGame() {
 
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawWalls();
         drawKill();
+        drawWalls();
         drawPlayer();
         drawGoal();
         checkGround();
         checkGoal();
         checkKill();
         drawTrigger();
+        checkTrigger()
         
 
         requestAnimationFrame(update);
