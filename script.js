@@ -73,8 +73,8 @@ function startGame() {
                 {}
             ],
             goal: { x: 280, y: 240, width: 20, height: 20, color: true },
-            //goal: { x: 20, y: 20, width: 20, height: 20 },
-            playerStart: { x: 20, y: 20 },
+            //playerStart: { x: 20, y: 20 },
+            playerStart: { x: 280, y: 240 }, 
             gravity: { active: false, strength: 1}
         },
 
@@ -125,8 +125,8 @@ function startGame() {
                 {}
             ],
             goal: { x: 375, y: 200, width: 5, height: 80, color: false},
-            playerStart: { x: 40, y: 260 },
-            //playerStart: {x: 375, y: 200},
+            //playerStart: { x: 40, y: 260 },
+            playerStart: {x: 375, y: 200},
             gravity: { active: true, strength: 1}
         },
         {
@@ -139,18 +139,60 @@ function startGame() {
 
                 {x: 20, y: 280, width: 120, height: 100}, // Fist hill
                 {x: 140, y: 280, width: 80, height: 100, enable: true, id: 1}, // Second (Moving Hill)
-                {x: 220, y: 280, width: 160, height: 100,} // Second
+                {x: 220, y: 280, width: 160, height: 100,}, // Second
+
+                {x: 260, y: 220, width: 20, height: 60, enable: false, id:2}, // Spawnded wall
+                {x: 80, y: 260, width: 60, height: 20, enable: false, id:3, e: 1}, // FIRST HUMP
+                {x: 140, y: 240, width: 60, height: 20, enable: false, id:3, e: 2}, // SECOND HUMP
+                {x: 200, y: 220, width: 60, height: 20, enable: false, id:3, e: 3}, // LAST HUMP
 
             ],
             kill: [
                 {x: 140, y: 360, width: 80, height: 20},
             ],
             trigger: [
-                {x: 140, y: 200, width: 1, height: 80, id: 1, color: false}
+                {x: 120, y: 200, width: 20, height: 80, id: 1, color: false, active: true}, // Removes the floow
+                {x: 240, y: 200, width: 20, height: 80, id: 2, color: false, active: true}, // Makes a wall
+                {x: 20, y: 200, width: 20, height: 80, id: 3, color: false, active: false},
             ],
             goal: { x: 375, y: 200, width: 5, height: 80, color: false},
-            playerStart: { x: 40, y: 260 },
+            //playerStart: { x: 40, y: 260 },
+            playerStart: { x: 375, y: 200 },
             gravity: { active: true, strength: 1}
+        },
+        {
+            walls: [
+                // Main Box
+                {x: 0, y: 0, width: 400, height: 20},
+                {x: 0, y: 380, width: 400, height: 20},
+                {x: 0, y: 0, width: 20, height: 400},
+                {x: 380, y: 0, width: 20, height: 400},
+
+                {x: 120, y: 160, width: 20, height: 60,}, // left 1
+                {x: 140, y: 140, width: 40, height: 20,}, // left 2 to 3 top
+                {x: 180, y: 160, width: 40, height: 20,}, // 4 to 6 top
+                {x: 220, y: 140, width: 40, height: 20,}, // 7 to 9 top
+                {x: 260, y: 160, width: 20, height: 60,}, // right last
+                {x: 140, y: 220, width: 20, height: 20,}, // left top pixle
+                {x: 160, y: 240, width: 20, height: 20,}, // left btom pixle
+                {x: 180, y: 260, width: 40, height: 20,}, // 4 to 6 bottom 
+                {x: 240, y: 220, width: 20, height: 20,}, // right top pixle
+                {x: 220, y: 240, width: 20, height: 20,}, // right btom pixle
+                
+            ],
+            heart: [
+                {x: 140, y: 160, width: 20, height: 60,},
+                {x: 160, y: 160, width: 20, height: 80,},
+                {x: 180, y: 180, width: 20, height: 80,},
+                {x: 200, y: 180, width: 20, height: 80,},
+                {x: 220, y: 160, width: 20, height: 80,},
+                {x: 240, y: 160, width: 20, height: 60,},
+            ],
+            kill:  [],
+            trigger: [],
+            goal: { x: 375, y: 200, width: 5, height: 80, color: false},
+            playerStart: { x: 40, y: 260 },
+            gravity: { active: true, strength: .2}
         }
     ];
 
@@ -166,6 +208,7 @@ function startGame() {
     let kill = levels[currentLevel].kill;
     let gravity = levels[currentLevel].gravity;
     let trigger = levels[currentLevel].trigger;
+    let heart = levels[currentLevel].heart;
 
 
     const player = {
@@ -184,6 +227,7 @@ function startGame() {
         kill = levels[currentLevel].kill;
         gravity = levels[currentLevel].gravity;
         trigger = levels[currentLevel].trigger;
+        heart = levels[currentLevel].heart;
 
         player.x = levels[currentLevel].playerStart.x;
         player.y = levels[currentLevel].playerStart.y;
@@ -193,7 +237,7 @@ function startGame() {
     function backupLevel() {
         backUpLevel = JSON.parse(JSON.stringify(levels[currentLevel]));
     }
-    backupLevel();
+    backupLevel(); // VERY IMPOTANT neded in order to not crash on level
 
 
     // -------------------------
@@ -206,6 +250,12 @@ function startGame() {
                 ctx.fillRect(w.x, w.y, w.width, w.height);
             }
         });
+        if (currentLevel === 4) {
+            ctx.fillStyle = "#b73ecc";
+            heart.forEach(h => {
+                ctx.fillRect(h.x, h.y, h.width, h.height);
+            });
+        }
     }
 
 
@@ -289,15 +339,75 @@ function startGame() {
     // -------------------------
 
     function t1() {
-        walls.forEach (w => {
-            if (w.id === 1){
+        // Disable the trigger so it can't fire again
+        trigger.forEach(t => {
+            if (t.id === 1) {
+                t.active = false;
+            }
+        });
+
+        // Disable the wall and re-enable after 3 seconds
+        levels[currentLevel].walls.forEach(w => {
+            if (w.id === 1) {
                 w.enable = false;
-            } 
+                setTimeout(() => {
+                    w.enable = true;
+                }, 3000);
+            }
+        });
+    }
+    // makes the wall apear
+    function t2(){
+        trigger.forEach(t => {
+            if (t.id === 2) {
+                t.active = false;
+            }
+        });
+        // Turns on triger 3
+        trigger.forEach(t => {
+            if (t.id === 3) {
+                t.active = true;
+            }
+        });
+        levels[currentLevel].walls.forEach(w => {
+            if (w.id === 2){
+                w.enable = true;
+            }
         });
     }
 
+    function t3(){
+        trigger.forEach(t => {
+            if (t.id === 3) {
+                t.active = false;
+            }
+        });
+
+        levels[currentLevel].walls.forEach(w => {
+            if (w.id === 3){
+                if (w.e === 1) {
+                    w.enable = true;
+                }
+                else if(w.e === 2) {
+                    setTimeout(() => {
+                        w.enable = true;
+                    }, 1000);
+                }
+                else {
+                    setTimeout(() => {
+                        w.enable = true;
+                    }, 2000);
+                };
+            }
+        });
+    }
+
+
+
     const trigerActions = {
         1: () => t1(),
+        2: () => t2(),
+        3: () => t3(),
     }
 
     // -------------------------------------------------------------------------------
@@ -349,7 +459,7 @@ function startGame() {
     );
 
 
-
+    // =====================================================================================================
 
 
     // -------------------------
@@ -417,12 +527,14 @@ function startGame() {
                 player.y < t.y + t.height &&
                 player.y + player.size > t.y
             ) {
-                if (t.id && trigerActions[t.id]){
+                if (t.id && trigerActions[t.id] && t.active){
                     trigerActions[t.id](); // Runs the certain triger its linked to 
                 }
             }
         })
     }
+
+
 
     // -------------------------
     // GAME LOOP
@@ -453,7 +565,7 @@ function startGame() {
         checkGoal();
         checkKill();
         drawTrigger();
-        checkTrigger()
+        checkTrigger();
         
 
         requestAnimationFrame(update);
