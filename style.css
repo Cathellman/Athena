@@ -53,8 +53,23 @@ body {
     margin: 0 auto;
 }
 
+#snakeButton {
+    background-color: purple;
+    padding: 12px 24px; /*Size*/
+    border: none;
+    border-radius: 10px;
+    color: rgb(255, 255, 255);
+    display: block;
+    margin: 0 auto;
+}
+
 /*On Button Hover*/
 #firstGame:hover{
+    background-color: rgb(58, 0, 58);
+    transform: translateY(-2px); /*Slight Shift*/
+}
+
+#snakeButton:hover{
     background-color: rgb(58, 0, 58);
     transform: translateY(-2px); /*Slight Shift*/
 }
@@ -70,6 +85,16 @@ body {
     width: fit-content;
 }
 
+#gameScreen2{
+    background-color: aqua;
+    margin: 20px auto;
+    width: 400px;
+    height: 400px;
+
+    position: relative;
+
+    width: fit-content;
+}
 
 /* Play button */
 #buttonContainer {
@@ -95,3 +120,31 @@ body {
 }
 
 
+
+/*Phy Game */
+
+#phyScreen {
+    background-color: aqua;
+    margin: 20px auto;
+    width: 400px;
+    height: 400px;
+
+    position: relative;
+
+    width: fit-content;
+}
+
+#phyButton {
+    background-color: purple;
+    padding: 12px 24px; /*Size*/
+    border: none;
+    border-radius: 10px;
+    color: rgb(255, 255, 255);
+    display: block;
+    margin: 0 auto;
+}
+
+#phyButton:hover {
+    background-color: rgb(58, 0, 58);
+    transform: translateY(-2px); /*Slight Shift*/
+}

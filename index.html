@@ -14,6 +14,8 @@
 
     <div id="playMenu">
         <button id="firstGame" onclick="startGame()">Play Game</button>
+        <button id="snakeButton" onclick="snakeGame()">Snake Game</button>
+        <button id="phyButton" onclick="phyGame()">Physics Game</button>
     </div>
 
     <div id="gameScreen" style="display:none;">
@@ -32,6 +34,15 @@
                 <img src="images/arrow_drop_down_80dp_1F1F1F_FILL0_wght400_GRAD0_opsz48.png" class="btnIcon" ></img>
             </button>
         </div>
+    </div>
+    <!--Snake Game Screen-->
+    <div id="gameScreen2" style="display:none;">
+        <canvas id="snakeGame" width="400" height="400"></canvas>
+    </div>
+
+    <!--Phisics Game-->
+    <div id="phyScreen" style="display: none;">
+        <canvas id="phyGame" width="400" height="400"></canvas>
     </div>
 </body>
 </html>

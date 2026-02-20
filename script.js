@@ -192,7 +192,24 @@ function startGame() {
             trigger: [],
             goal: { x: 375, y: 200, width: 5, height: 80, color: false},
             playerStart: { x: 40, y: 260 },
+            //playerStart: { x: 375, y: 200},
             gravity: { active: true, strength: .2}
+        },
+        {
+            walls: [
+                // Main Box
+                {x: 0, y: 0, width: 400, height: 20},
+                {x: 0, y: 380, width: 400, height: 20},
+                {x: 0, y: 0, width: 20, height: 400},
+                {x: 380, y: 0, width: 20, height: 400},
+
+            ],
+            kill: [],
+            trigger: [],
+            goal: { x: 375, y: 200, width: 5, height: 80, color: false},
+            playerStart: { x: 40, y: 260 },
+            //playerStart: { x: 375, y: 200 },
+            gravity: { active: false, strength: 1}
         }
     ];
 
@@ -238,7 +255,6 @@ function startGame() {
         backUpLevel = JSON.parse(JSON.stringify(levels[currentLevel]));
     }
     backupLevel(); // VERY IMPOTANT neded in order to not crash on level
-
 
     // -------------------------
     // DRAWING FUNCTIONS
@@ -289,10 +305,15 @@ function startGame() {
     }
 
     function ChangeIcons() {
-        if (gravity.active && !iconChanged) {
+        if (gravity.active && !iconChanged ) {
             document.querySelector("#Up img").src = "images/close_80dp_1F1F1F_FILL0_wght400_GRAD0_opsz48.png";
             document.querySelector("#Down img").src = "images/cruelty_free_80dp_1F1F1F_FILL0_wght400_GRAD0_opsz48.png";
             iconChanged = true;
+        }
+        else if (!gravity.active && iconChanged) {
+            document.querySelector('#Up img').src = "images/arrow_drop_up_80dp_1F1F1F_FILL0_wght400_GRAD0_opsz48.png"
+            document.querySelector('#Down img').src = "images/arrow_drop_down_80dp_1F1F1F_FILL0_wght400_GRAD0_opsz48.png"
+            iconChanged = false;
         }
     }
 
@@ -303,9 +324,14 @@ function startGame() {
     document.addEventListener("keydown", e => {
         // Disable up when gravity
         if (e.key === "ArrowUp") {
-            if (!gravity.active) player.dy = -player.speed;
-            else null;
+            if (!gravity.active) {
+                player.dy = -player.speed;
+            } else {
+                currentLevel = 0;
+                backupLevel();
+            }
         }
+
         // JUMPING IF ACTIVE GRVITY
         if (e.key === "ArrowDown"){
             if (gravity.active && player.grounded){
@@ -573,3 +599,257 @@ function startGame() {
 
     update();
 }
+
+
+function snakeGame() {
+    document.getElementById("playMenu").style.display = "none";
+    document.getElementById("gameScreen2").style.display = "block";
+
+    const canvas = document.getElementById("snakeGame");
+    const ctx = canvas.getContext("2d");
+
+    // GRID SIZE
+    const grid = 20;
+
+    // SNAKE BODY
+    let snake = [
+        { x: 200, y: 200 }
+    ];
+
+    let dx = grid;   // moving right initially
+    let dy = 0;
+
+    // FOOD
+    let food = spawnFood();
+
+    // GAME LOOP SPEED
+    let speed = 120; // ms per frame
+
+    // -------------------------
+    // INPUT
+    // -------------------------
+    document.addEventListener("keydown", e => {
+        if (e.key === "ArrowUp" && dy === 0) {
+            dx = 0; dy = -grid;
+        }
+        if (e.key === "ArrowDown" && dy === 0) {
+            dx = 0; dy = grid;
+        }
+        if (e.key === "ArrowLeft" && dx === 0) {
+            dx = -grid; dy = 0;
+        }
+        if (e.key === "ArrowRight" && dx === 0) {
+            dx = grid; dy = 0;
+        }
+    });
+
+    // -------------------------
+    // SPAWN FOOD
+    // -------------------------
+    function spawnFood() {
+        return {
+            x: Math.floor(Math.random() * (canvas.width / grid)) * grid,
+            y: Math.floor(Math.random() * (canvas.height / grid)) * grid
+        };
+    }
+
+    // -------------------------
+    // GAME LOOP
+    // -------------------------
+    function update() {
+        setTimeout(() => {
+            // Move snake head
+            const head = {
+                x: snake[0].x + dx,
+                y: snake[0].y + dy
+            };
+
+            // WALL COLLISION
+            if (
+                head.x < 0 || head.x >= canvas.width ||
+                head.y < 0 || head.y >= canvas.height
+            ) {
+                return gameOver();
+            }
+
+            // SELF COLLISION
+            for (let part of snake) {
+                if (head.x === part.x && head.y === part.y) {
+                    return gameOver();
+                }
+            }
+
+            snake.unshift(head);
+
+            // FOOD EAT
+            if (head.x === food.x && head.y === food.y) {
+                speed = speed + -7;
+                food = spawnFood();
+            } else {
+                snake.pop();
+            }
+
+            draw();
+            update();
+        }, speed);
+    }
+
+    // -------------------------
+    // DRAW EVERYTHING
+    // -------------------------
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw food
+        ctx.fillStyle = "pink";
+        ctx.fillRect(food.x, food.y, grid, grid);
+
+        // Draw snake
+        ctx.fillStyle = "purple";
+        snake.forEach(part => {
+            ctx.fillRect(part.x, part.y, grid, grid);
+        });
+    }
+
+    // -------------------------
+    // GAME OVER
+    // -------------------------
+    function gameOver() {
+        ctx.fillStyle = "white";
+        ctx.font = "30px Arial";
+        ctx.fillText("Game Over!", 110, 200);
+
+        setTimeout(() => {
+            // Reset snake
+            snake = [{ x: 200, y: 200 }];
+            dx = grid;
+            dy = 0;
+            food = spawnFood();
+            update();
+        }, 1500);
+    }
+
+    update();
+}
+
+
+function phyGame() {
+    document.getElementById("playMenu").style.display = "none";
+    document.getElementById("phyScreen").style.display = "block";
+
+    const canvas = document.getElementById("phyGame");
+    const ctx = canvas.getContext("2d");
+
+    let nodeId = 0;
+    let nodes = [];
+
+    // ---------------------------------------------------------
+    // GRAVITY CONSTANT (tune this)
+    const G = 0.5; 
+    // ---------------------------------------------------------
+
+    // ---------------------------------------------------------
+    // GRAVITY FORCE BETWEEN BODIES
+    function computeForce(body) {
+        let fx = 0;
+        let fy = 0;
+
+        nodes.forEach(other => {
+            if (other.id === body.id) return;
+
+            let dx = other.x - body.x;
+            let dy = other.y - body.y;
+
+            let dist = Math.sqrt(dx*dx + dy*dy);
+
+            // Prevent infinite force
+            let minDist = 10;
+            if (dist < minDist) dist = minDist;
+
+            // Normalize direction
+            let nx = dx / dist;
+            let ny = dy / dist;
+
+            // Newton's law of gravitation
+            let force = (G * body.mass * other.mass) / (dist * dist);
+
+            fx += nx * force;
+            fy += ny * force;
+        });
+
+        return { fx, fy };
+    }
+    // ---------------------------------------------------------
+
+    // ---------------------------------------------------------
+    // UPDATE POSITIONS USING REAL PHYSICS
+    function move() {
+        nodes.forEach(body => {
+            let f = computeForce(body);
+
+            // acceleration = force / mass
+            body.ax = f.fx / body.mass;
+            body.ay = f.fy / body.mass;
+
+            // update velocity
+            body.vx += body.ax;
+            body.vy += body.ay;
+
+            // damping (keeps simulation stable)
+            body.vx *= 0.999;
+            body.vy *= 0.999;
+
+            // update position
+            body.x += body.vx;
+            body.y += body.vy;
+        });
+    }
+    // ---------------------------------------------------------
+
+    // ---------------------------------------------------------
+    // SPAWN NEW PLANET ON CLICK
+    canvas.addEventListener("click", function (event) {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        nodes.push({
+            id: nodeId++,
+            x: x,
+            y: y,
+            width: 10,
+            height: 10,
+            mass: 20,      // ← you can change this
+            vx: 0,
+            vy: 0,
+            ax: 0,
+            ay: 0
+        });
+    });
+    // ---------------------------------------------------------
+
+    // ---------------------------------------------------------
+    // DRAW PLANETS
+    function drawNodes() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        nodes.forEach(node => {
+            ctx.fillStyle = "black";
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, node.width, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+    // ---------------------------------------------------------
+
+    // ---------------------------------------------------------
+    // MAIN LOOP
+    function update() {
+        move();
+        drawNodes();
+        requestAnimationFrame(update);
+    }
+    update();
+}
+
+
